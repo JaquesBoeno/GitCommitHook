@@ -28,14 +28,21 @@ func commit() {
 	for _, question := range questions {
 		if question.Items != nil {
 			ask := promptInputs.PromptContentSelect{
-				Label: question.Label,
-				Items: question.Items,
+				Label:    question.Label,
+				Items:    question.Items,
+				ErrorMsg: "Select a valid option",
 			}
 
-			response := promptInputs.PromptContentSelect(ask).
-				fmt.Println(response)
+			promptInputs.PromptGetSelect(ask)
 		} else {
+			ask := promptInputs.PromptContent{
+				Label:    question.Label,
+				ErrorMsg: question.ErrorMsg,
+				Min:      question.Min,
+				Max:      question.Max,
+			}
 
+			promptInputs.PromptGetInput(ask)
 		}
 	}
 }

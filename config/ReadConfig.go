@@ -12,8 +12,11 @@ type Configs struct {
 }
 
 type Question struct {
-	Items []Item `json:"items"`
-	Label string `json:"label"`
+	Items    []Item `json:"items"`
+	Label    string `json:"label"`
+	ErrorMsg string `json:errorMsg`
+	Min      int    `json:"min"`
+	Max      int    `json:"max"`
 }
 
 type Item struct {

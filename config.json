@@ -35,10 +35,16 @@
       ]
     },
     {
-      "label": "Write a short, imperative tense description of change (max 66 chars)"
+      "label": "Write a short, imperative tense description of change (max 66 chars)",
+      "errorMsg": "Write a minimal 1 and max 66 chars",
+      "min": 1,
+      "max": 66
     },
     {
-      "label": "Provide a large description of the changes: (press enter for skip)"
+      "label": "Provide a large description of the changes: (press enter for skip)",
+      "errorMsg": "write a valid text",
+      "min": 0,
+      "max": 1000
     }
   ]
 }
