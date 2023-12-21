@@ -4,8 +4,6 @@ Copyright © 2023 JAQUES BOENO jaquesboeno@proton.me
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/JaquesBoeno/GitHook/config"
 	"github.com/spf13/cobra"
 )
@@ -24,5 +22,13 @@ func init() {
 }
 
 func commit() {
-	fmt.Println(config.ReadConfigs().Questions)
+	questions := config.ReadConfigs().Questions
+
+	for _, question := range questions {
+		if question.Items != nil {
+
+		} else {
+
+		}
+	}
 }
