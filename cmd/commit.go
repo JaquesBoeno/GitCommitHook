@@ -4,8 +4,12 @@ Copyright © 2023 JAQUES BOENO jaquesboeno@proton.me
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/JaquesBoeno/GitHook/config"
-	promptInputs "github.com/JaquesBoeno/GitHook/prompt"
+	"github.com/JaquesBoeno/GitHook/prompts"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
@@ -25,24 +29,15 @@ func init() {
 func commit() {
 	questions := config.ReadConfigs().Questions
 
+	p := tea.NewProgram(prompts.InitialModel())
+	if _, err := p.Run(); err != nil {
+		fmt.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
+	}
+
 	for _, question := range questions {
 		if question.Items != nil {
-			ask := promptInputs.PromptContentSelect{
-				Label:    question.Label,
-				Items:    question.Items,
-				ErrorMsg: "Select a valid option",
-			}
-
-			promptInputs.PromptGetSelect(ask)
 		} else {
-			ask := promptInputs.PromptContent{
-				Label:    question.Label,
-				ErrorMsg: question.ErrorMsg,
-				Min:      question.Min,
-				Max:      question.Max,
-			}
-
-			promptInputs.PromptGetInput(ask)
 		}
 	}
 }

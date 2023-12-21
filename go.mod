@@ -3,8 +3,8 @@ module github.com/JaquesBoeno/GitHook
 go 1.21.4
 
 require (
-	github.com/spf13/cobra v1.8.0
 	github.com/charmbracelet/bubbletea v0.25.0
+	github.com/spf13/cobra v1.8.0
 )
 
 require (
