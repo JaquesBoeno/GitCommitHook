@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/JaquesBoeno/GitHook/config"
 	"github.com/manifoldco/promptui"
 )
 
@@ -15,7 +16,7 @@ type PromptContent struct {
 
 type PromptContentSelect struct {
 	Label    string
-	Items    []string
+	Items    []config.Item
 	ErrorMsg string
 }
 
@@ -63,6 +64,7 @@ func PromptGetSelect(pc PromptContentSelect) string {
 		Label:    "{{ . | bold }}",
 		Active:   "\u279c {{ . | bold }}",
 		Selected: fmt.Sprintf("%s {{ . }}", pc.Label),
+		Details:  "{{ .Desc }}",
 	}
 
 	for index < 0 {
@@ -75,9 +77,9 @@ func PromptGetSelect(pc PromptContentSelect) string {
 
 		index, result, err = prompt.Run()
 
-		if index == -1 {
-			items = append(items, result)
-		}
+		// if index == -1 {
+		// 	items = append(items, result)
+		// }
 	}
 
 	if err != nil {

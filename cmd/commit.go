@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"github.com/JaquesBoeno/GitHook/config"
+	promptInputs "github.com/JaquesBoeno/GitHook/prompt"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +27,13 @@ func commit() {
 
 	for _, question := range questions {
 		if question.Items != nil {
+			ask := promptInputs.PromptContentSelect{
+				Label: question.Label,
+				Items: question.Items,
+			}
 
+			response := promptInputs.PromptContentSelect(ask).
+				fmt.Println(response)
 		} else {
 
 		}
