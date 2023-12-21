@@ -1,0 +1,46 @@
+{
+  "questions": [
+    {
+      "label": "What scope of this change? (e.g. backend or frontend)",
+      "items": [
+        { "name": "front-end", "desc": "Change in front-end scope" },
+        { "name": "back-end", "desc": "Change in back-end scope" }
+      ]
+    },
+    {
+      "label": "Select the type of change you're committing",
+      "items": [
+        { "name": "feat", "desc": "feat: A new feature" },
+        { "name": "fix", "desc": "fix: A bug fix" },
+        { "name": "docs", "desc": "docs: Documentation only changes" },
+        {
+          "name": "style",
+          "desc": "style: Changes that do not affect the meaning of the code\n            (white-space, formatting, missing semi-colons, etc)"
+        },
+        {
+          "name": "refactor",
+          "desc": "refactor: A code change that neither fixes a bug nor adds a feature"
+        },
+        {
+          "name": "perf",
+          "desc": "perf: A code change that improves performance"
+        },
+        { "name": "test", "desc": "test: Adding missing tests" },
+        {
+          "name": "chore",
+          "desc": "chore: Changes to the build process or auxiliary tools\n            and libraries such as documentation generation"
+        },
+        { "name": "revert", "desc": "revert: Revert to a commit" },
+        { "name": "WIP", "desc": "WIP: Work in progress" }
+      ]
+    },
+    {
+      "label": "Write a short, imperative tense description of change (max 66 chars)",
+      "items": []
+    },
+    {
+      "label": "Provide a large description of the changes: (press enter for skip)",
+      "items": []
+    }
+  ]
+}

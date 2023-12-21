@@ -27,8 +27,9 @@ func PromptGetInput(pc PromptContent) string {
 
 		return nil
 	}
+
 	templates := &promptui.PromptTemplates{
-		Prompt:  "{{ . }} ",
+		Prompt:  "{{ . | red }} ",
 		Valid:   "{{ . | green }} ",
 		Invalid: "{{ . | red }} ",
 		Success: "{{ . }} ",
@@ -59,9 +60,8 @@ func PromptGetSelect(pc PromptContentSelect) string {
 	items := pc.Items
 
 	templates := &promptui.SelectTemplates{
-		Label:  "{{ . | bold }}",
-		Active: "\u279c {{ . | bold }}",
-
+		Label:    "{{ . | bold }}",
+		Active:   "\u279c {{ . | bold }}",
 		Selected: fmt.Sprintf("%s {{ . }}", pc.Label),
 	}
 
