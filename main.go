@@ -1,6 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
+Copyright © 2023 Jaques Boeno jaquesboeno@proton.me
 */
 package main
 
