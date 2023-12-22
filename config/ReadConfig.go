@@ -8,13 +8,14 @@ import (
 )
 
 type Configs struct {
-	Questions []Question `json:"questions"`
+	Questions      []Question `json:"questions"`
+	TemplateCommit string     `json:"templateCommit"`
 }
 
 type Question struct {
-	Items    []Item `json:"items"`
 	Label    string `json:"label"`
-	ErrorMsg string `json:errorMsg`
+	Options  []Item `json:"options"`
+	ErrorMsg string `json:"errorMsg"`
 	Min      int    `json:"min"`
 	Max      int    `json:"max"`
 }

@@ -5,11 +5,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/JaquesBoeno/GitHook/commit"
 	"github.com/JaquesBoeno/GitHook/config"
-	"github.com/JaquesBoeno/GitHook/prompts"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +16,7 @@ var commitCmd = &cobra.Command{
 	Short: "Create a commit",
 	Long:  `creating commit with the pattern you defined in the settings file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		commit()
+		Run()
 	},
 }
 
@@ -26,23 +24,59 @@ func init() {
 	rootCmd.AddCommand(commitCmd)
 }
 
-func commit() {
-	questions := config.ReadConfigs().Questions
+func Run() {
+	config := config.ReadConfigs()
 
-	for _, question := range questions {
-		if question.Items != nil {
-			p := tea.NewProgram(prompts.InitialModel(question))
-			if _, err := p.Run(); err != nil {
-				fmt.Printf("Alas, there's been an error: %v", err)
-				os.Exit(1)
-			}
+	fmt.Println(commit.CommitMessageBuilder(config.TemplateCommit, []commit.Value{
+		{Id: "type", Value: "feat"},
+		{Id: "scope", Value: "front-end"},
+		{Id: "subject", Value: "user card added"},
+		{Id: "desc", Value: "some description"},
+	}))
 
-		} else {
-			p := tea.NewProgram(prompts.InitialModelInput(question))
-			if _, err := p.Run(); err != nil {
-				fmt.Printf("Alas, there's been an error: %v", err)
-				os.Exit(1)
-			}
-		}
-	}
+	// 	var scope, typ string
+	// 	var subject, description string
+
+	// 	for i, question := range questions {
+	// 		if question.Items != nil {
+	// 			p := tea.NewProgram(prompts.InitialModel(question))
+	// 			// Run returns the model as a tea.Model.
+	// 			m, err := p.Run()
+	// 			if err != nil {
+	// 				fmt.Println("Oh no:", err)
+	// 				os.Exit(1)
+	// 			}
+
+	// 			if m, ok := m.(prompts.SelectModel); ok && m.Choice.Name != "" {
+	// 				switch i {
+	// 				case 0:
+	// 					scope = m.Choice.Name
+	// 				case 1:
+	// 					typ = m.Choice.Name
+	// 				}
+	// 			}
+
+	// 		} else {
+	// 			p := tea.NewProgram(prompts.InitialModelInput(question))
+	// 			m, err := p.Run()
+	// 			if err != nil {
+	// 				fmt.Println("Oh no:", err)
+	// 				os.Exit(1)
+	// 			}
+
+	// 			if m, ok := m.(prompts.InputModel); ok && m.TextInput.Value() != "" {
+	// 				switch i {
+	// 				case 2:
+	// 					subject = m.TextInput.Value()
+	// 				case 3:
+	// 					description = m.TextInput.Value()
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+
+	// 	fmt.Println(fmt.Sprintf(`%s (%s): %s
+
+	// %s
+	// `, typ, scope, subject, description))
 }
