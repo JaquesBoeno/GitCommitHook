@@ -13,6 +13,7 @@ type Configs struct {
 }
 
 type Question struct {
+	Id       string `json:"id"`
 	Label    string `json:"label"`
 	Options  []Item `json:"options"`
 	ErrorMsg string `json:"errorMsg"`
