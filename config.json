@@ -36,6 +36,7 @@
         { "name": "WIP", "desc": "WIP: Work in progress" }
       ]
     },
+
     {
       "id": "subject",
       "label": "Write a short, imperative tense description of change (max 66 chars)",
