@@ -36,7 +36,13 @@ func commit() {
 				fmt.Printf("Alas, there's been an error: %v", err)
 				os.Exit(1)
 			}
+
 		} else {
+			p := tea.NewProgram(prompts.InitialModelInput(question))
+			if _, err := p.Run(); err != nil {
+				fmt.Printf("Alas, there's been an error: %v", err)
+				os.Exit(1)
+			}
 		}
 	}
 }
