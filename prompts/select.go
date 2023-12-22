@@ -33,18 +33,18 @@ func (m SelectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q":
 			return m, tea.Quit
 		case "enter":
-			m.Choice = m.Question.Items[m.cursor]
+			m.Choice = m.Question.Options[m.cursor]
 			return m, tea.Quit
 
 		case "up", "k":
 			m.cursor--
 			if m.cursor < 0 {
-				m.cursor = len(m.Question.Items) - 1
+				m.cursor = len(m.Question.Options) - 1
 			}
 
 		case "down", "j":
 			m.cursor++
-			if m.cursor >= len(m.Question.Items) {
+			if m.cursor >= len(m.Question.Options) {
 				m.cursor = 0
 			}
 		}
@@ -65,7 +65,7 @@ func (m SelectModel) View() string {
 		s.WriteString(fmt.Sprintf("%s: \033[1m%s\033[0m\n\n", m.Question.Label, m.Choice.Name))
 	} else {
 		s.WriteString(fmt.Sprintf("%s:\n\n", m.Question.Label))
-		if len(m.Question.Items) > questionPerPage {
+		if len(m.Question.Options) > questionPerPage {
 			half := int(math.Floor(float64(questionPerPage) / 2))
 			start, end := 0, 0
 			start = m.cursor - half
@@ -74,35 +74,35 @@ func (m SelectModel) View() string {
 			if start < 0 {
 				start = 0
 				end = questionPerPage
-			} else if end > len(m.Question.Items) {
-				end = len(m.Question.Items)
-				start = len(m.Question.Items) - questionPerPage
+			} else if end > len(m.Question.Options) {
+				end = len(m.Question.Options)
+				start = len(m.Question.Options) - questionPerPage
 			}
 
-			questionInPager = m.Question.Items[start:end]
+			questionInPager = m.Question.Options[start:end]
 
 			showChoices(&s, m.cursor, questionInPager, start)
 
 		} else {
-			showChoices(&s, m.cursor, m.Question.Items, 0)
+			showChoices(&s, m.cursor, m.Question.Options, 0)
 		}
 
-		s.WriteString(fmt.Sprintf("\n%s\n", m.Question.Items[m.cursor].Desc))
+		s.WriteString(fmt.Sprintf("\n%s\n", m.Question.Options[m.cursor].Desc))
 
 	}
 
 	return s.String()
 }
 
-func showChoices(s *strings.Builder, cursor int, items []config.Item, start int) {
-	for i := range items {
+func showChoices(s *strings.Builder, cursor int, options []config.Item, start int) {
+	for i := range options {
 		if cursor == i+start {
 			s.WriteString("(•) ")
 		} else {
 			s.WriteString("( ) ")
 		}
 
-		s.WriteString(items[i].Name)
+		s.WriteString(options[i].Name)
 		s.WriteString("\n")
 	}
 }
