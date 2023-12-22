@@ -9,40 +9,42 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type model struct {
-	choice   config.Item
+type SelectModel struct {
+	Choice   config.Item
 	cursor   int
-	question config.Question
+	Question config.Question
 }
 
-func InitialModel(question config.Question) model {
-	return model{
+func InitialModel(question config.Question) SelectModel {
+	return SelectModel{
 		cursor:   0,
-		question: question,
+		Question: question,
 	}
 }
 
-func (m model) Init() tea.Cmd {
+func (m SelectModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m SelectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "q":
+			return m, tea.Quit
 		case "enter":
-			m.choice = m.question.Items[m.cursor]
+			m.Choice = m.Question.Items[m.cursor]
 			return m, tea.Quit
 
 		case "up", "k":
 			m.cursor--
 			if m.cursor < 0 {
-				m.cursor = len(m.question.Items) - 1
+				m.cursor = len(m.Question.Items) - 1
 			}
 
 		case "down", "j":
 			m.cursor++
-			if m.cursor >= len(m.question.Items) {
+			if m.cursor >= len(m.Question.Items) {
 				m.cursor = 0
 			}
 		}
@@ -51,19 +53,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
+func (m SelectModel) View() string {
 	s := strings.Builder{}
 
 	questionPerPage := 5 // odd number only
 	questionInPager := make([]config.Item, questionPerPage)
 
-	if len(m.choice.Name) != 0 {
+	if len(m.Choice.Name) != 0 {
 		// \033[1 is ANSI code for make text bold, check FormattingSheet.md in root for other styles
 		// enter here when have a choice selected
-		s.WriteString(fmt.Sprintf("%s: \033[1m%s\033[0m\n\n", m.question.Label, m.choice.Name))
+		s.WriteString(fmt.Sprintf("%s: \033[1m%s\033[0m\n\n", m.Question.Label, m.Choice.Name))
 	} else {
-		s.WriteString(fmt.Sprintf("%s:\n\n", m.question.Label))
-		if len(m.question.Items) > questionPerPage {
+		s.WriteString(fmt.Sprintf("%s:\n\n", m.Question.Label))
+		if len(m.Question.Items) > questionPerPage {
 			half := int(math.Floor(float64(questionPerPage) / 2))
 			start, end := 0, 0
 			start = m.cursor - half
@@ -72,20 +74,20 @@ func (m model) View() string {
 			if start < 0 {
 				start = 0
 				end = questionPerPage
-			} else if end > len(m.question.Items) {
-				end = len(m.question.Items)
-				start = len(m.question.Items) - questionPerPage
+			} else if end > len(m.Question.Items) {
+				end = len(m.Question.Items)
+				start = len(m.Question.Items) - questionPerPage
 			}
 
-			questionInPager = m.question.Items[start:end]
+			questionInPager = m.Question.Items[start:end]
 
 			showChoices(&s, m.cursor, questionInPager, start)
 
 		} else {
-			showChoices(&s, m.cursor, m.question.Items, 0)
+			showChoices(&s, m.cursor, m.Question.Items, 0)
 		}
 
-		s.WriteString(fmt.Sprintf("\n%s\n", m.question.Items[m.cursor].Desc))
+		s.WriteString(fmt.Sprintf("\n%s\n", m.Question.Items[m.cursor].Desc))
 
 	}
 

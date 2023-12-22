@@ -1,7 +1,6 @@
 package prompts
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/JaquesBoeno/GitHook/config"
@@ -14,48 +13,64 @@ type (
 	errMsg error
 )
 
-type inputModel struct {
-	textInput textinput.Model
-	question  config.Question
+type InputModel struct {
+	TextInput textinput.Model
+	Question  config.Question
 	err       error
 }
 
-func validate(s string) error {
-	if len(s) <= 0 {
-		return errors.New("write some text, not possible null")
-	} else {
-		return nil
+func (m InputModel) checkMinLen() error {
+	var err error
+
+	c := m.TextInput
+	if len(c.Value()) < m.Question.Min {
+		err = fmt.Errorf(
+			"minimal char: %d",
+			m.Question.Min,
+		)
 	}
+	return err
 }
 
-func InitialModelInput(question config.Question) inputModel {
+func validate(s string) error {
+	if len(s) < 6 {
+		return fmt.Errorf("too short")
+	}
+
+	return nil
+}
+
+func InitialModelInput(question config.Question) InputModel {
 	ti := textinput.New()
 	ti.Placeholder = "Message here"
 	ti.Focus()
 	ti.CharLimit = question.Max
-	ti.Validate = validate
 	ti.Width = 100
 	ti.ShowSuggestions = true
 
-	return inputModel{
-		textInput: ti,
+	return InputModel{
+		TextInput: ti,
 		err:       nil,
-		question:  question,
+		Question:  question,
 	}
 }
 
-func (m inputModel) Init() tea.Cmd {
+func (m InputModel) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m inputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m InputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
-			return m, tea.Quit
+			m.err = m.checkMinLen()
+
+			if m.err == nil {
+				return m, tea.Quit
+			}
 		}
 
 	// We handle errors just like any other message
@@ -64,7 +79,7 @@ func (m inputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	m.textInput, cmd = m.textInput.Update(msg)
+	m.TextInput, cmd = m.TextInput.Update(msg)
 	return m, cmd
 }
 
@@ -75,12 +90,12 @@ func chars(len int, min int, max int) string {
 	return fmt.Sprintf("\033[32m(%d)\033[0m", len)
 }
 
-func (m inputModel) View() string {
+func (m InputModel) View() string {
 
 	return fmt.Sprintf(
 		"%s\n%s %s\n",
-		m.question.Label,
-		chars(len(m.textInput.Value()), 1, 66),
-		m.textInput.View(),
+		m.Question.Label,
+		chars(len(m.TextInput.Value()), 1, 66),
+		m.TextInput.View(),
 	) + "\n"
 }
