@@ -29,14 +29,13 @@ func init() {
 func commit() {
 	questions := config.ReadConfigs().Questions
 
-	p := tea.NewProgram(prompts.InitialModel())
-	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
-		os.Exit(1)
-	}
-
 	for _, question := range questions {
 		if question.Items != nil {
+			p := tea.NewProgram(prompts.InitialModel(question))
+			if _, err := p.Run(); err != nil {
+				fmt.Printf("Alas, there's been an error: %v", err)
+				os.Exit(1)
+			}
 		} else {
 		}
 	}
