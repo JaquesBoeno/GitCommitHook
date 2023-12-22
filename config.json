@@ -1,15 +1,17 @@
 {
   "questions": [
     {
+      "id": "scope",
       "label": "What scope of this change? (e.g. backend or frontend)",
-      "items": [
+      "options": [
         { "name": "front-end", "desc": "Change in front-end scope" },
         { "name": "back-end", "desc": "Change in back-end scope" }
       ]
     },
     {
+      "id": "type",
       "label": "Select the type of change you're committing",
-      "items": [
+      "options": [
         { "name": "feat", "desc": "feat: A new feature" },
         { "name": "fix", "desc": "fix: A bug fix" },
         { "name": "docs", "desc": "docs: Documentation only changes" },
@@ -35,16 +37,19 @@
       ]
     },
     {
+      "id": "subject",
       "label": "Write a short, imperative tense description of change (max 66 chars)",
       "errorMsg": "Write a minimal 1 and max 66 chars",
       "min": 1,
       "max": 66
     },
     {
+      "id": "desc",
       "label": "Provide a large description of the changes: (press enter for skip)",
       "errorMsg": "write a valid text",
       "min": 0,
       "max": 1000
     }
-  ]
+  ],
+  "templateCommit": "<type>(<scope>): <subject>\n\n<desc>\n"
 }
