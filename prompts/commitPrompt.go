@@ -73,7 +73,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						Id:    m.currentQuestion.Id,
 						Value: m.currentQuestion.Options[m.currentCursor].Name,
 					})
-					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("%s: \033[1m%s\033[0m\n",
+					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("\033[1m%s:\033[0m %s\n",
 						m.currentQuestion.Label,
 						m.currentQuestion.Options[m.currentCursor].Name))
 					return m.NextQuestion()
@@ -102,7 +102,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Err = m.checkLen()
 
 				if m.Err == nil {
-					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("%s:\n> %s\n",
+					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("\033[1m%s:\033[0m\n> %s\n",
 						m.currentQuestion.Label,
 						m.currentTextinput.Value()))
 					m.Responses = append(m.Responses, commitMessage.Value{
@@ -158,18 +158,35 @@ func (m Model) View() string {
 
 			questionInPage = m.currentQuestion.Options[start:end]
 
-			for i, option := range questionInPage {
-				if m.currentCursor == i+start {
-					str.WriteString("(•) ")
-				} else {
-					str.WriteString("( ) ")
-				}
+			var maxNameLen int
 
-				str.WriteString(option.Name)
-				str.WriteString("\n")
+			for _, v := range m.currentQuestion.Options {
+				padding := 5
+				if len(v.Name)+padding > maxNameLen {
+					maxNameLen = len(v.Name) + padding
+				}
 			}
 
-			str.WriteString(fmt.Sprintf("\n%s\n", m.currentQuestion.Options[m.currentCursor].Desc))
+			for i, option := range questionInPage {
+				var desc string
+				var name string
+
+				if strings.Contains(option.Desc, "\n") {
+					split := strings.Split(option.Desc, "\n")
+					desc = fmt.Sprintf("%s\n %s %s", split[0], strings.Repeat(" ", maxNameLen), split[1])
+				} else {
+					desc = option.Desc
+				}
+				name = fmt.Sprintf("%s%s", option.Name, strings.Repeat(" ", maxNameLen-len(option.Name)))
+
+				if m.currentCursor == i+start {
+					str.WriteString(fmt.Sprintf("\033[36m\033[1m❯ %s%s\033[0m", name, desc))
+				} else {
+					str.WriteString(fmt.Sprintf("  %s%s", name, desc))
+				}
+
+				str.WriteString("\n")
+			}
 		}
 	case "text":
 		{

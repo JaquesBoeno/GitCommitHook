@@ -39,19 +39,18 @@ func Run(args []string) {
 		os.Exit(1)
 	}
 
-	if m, ok := m.(prompts.Model); ok && m.Responses[0].Id != "" {
-		if m.Err == nil {
-			message := commitMessage.CommitMessageBuilder(config.TemplateCommit, m.Responses)
-			if args[0] == "--hook" {
-				git.Hook(message, args[1])
-			} else {
-				result, err := git.Commit(message)
-				if err != nil {
-					log.Printf("run git commit failed, err=%v\n", err)
-					log.Printf("commit message is: \n\n%s\n\n", string(message))
-				}
-				fmt.Print(result, "\n")
+	if m, ok := m.(prompts.Model); ok && m.Err == nil && m.Responses[0].Id != "" {
+		message := commitMessage.CommitMessageBuilder(config.TemplateCommit, m.Responses)
+		if args[0] == "--hook" {
+			git.Hook(message, args[1])
+		} else {
+			result, err := git.Commit(message)
+			if err != nil {
+				log.Printf("run git commit failed, err=%v\n", err)
+				log.Printf("commit message is: \n\n%s\n\n", string(message))
 			}
+			fmt.Print(result, "\n")
 		}
+
 	}
 }
