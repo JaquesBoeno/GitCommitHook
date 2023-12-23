@@ -1,6 +1,7 @@
 package prompts
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -20,7 +21,7 @@ type Model struct {
 	currentQuestion  config.Question
 	pastResponses    string
 	index            int
-	err              error
+	Err              error
 }
 
 type (
@@ -56,6 +57,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
+			m.Err = errors.New("exit")
 			return m, tea.Quit
 		}
 	}
@@ -97,9 +99,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.Type {
 			case tea.KeyEnter:
-				m.err = m.checkLen()
+				m.Err = m.checkLen()
 
-				if m.err == nil {
+				if m.Err == nil {
 					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("%s:\n> %s\n",
 						m.currentQuestion.Label,
 						m.currentTextinput.Value()))
@@ -113,7 +115,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case errMsg:
-			m.err = msg
+			m.Err = msg
 			return m, nil
 		}
 
