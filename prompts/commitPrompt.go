@@ -119,6 +119,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		m.currentTextinput, cmd = m.currentTextinput.Update(msg)
 		return m, cmd
+	case "none":
+		return m, nil
 	}
 
 	return m, nil
@@ -178,18 +180,22 @@ func (m Model) View() string {
 			) + "\n")
 
 		}
+	case "none":
+		return str.String()
 	}
 
 	return str.String()
-
 }
 
 func (m Model) NextQuestion() (tea.Model, tea.Cmd) {
 	if m.index >= len(m.Questions)-1 {
-		tea.ClearScreen()
+		m.currentQuestion = config.Question{
+			Type: "none",
+		}
 		return m, tea.Quit
 	} else {
 		m.index++
+		m.currentCursor = 0
 		m.currentQuestion = m.Questions[m.index]
 
 		if m.currentQuestion.Type == "text" {

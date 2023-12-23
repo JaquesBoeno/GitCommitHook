@@ -37,6 +37,6 @@ func Run() {
 	}
 
 	if m, ok := m.(prompts.Model); ok && m.Responses[0].Id != "" {
-		fmt.Println(commit.CommitMessageBuilder(config.TemplateCommit, m.Responses))
+		fmt.Println("\n\nCommit Mensagem Preview:\n\n", commit.CommitMessageBuilder(config.TemplateCommit, m.Responses))
 	}
 }
