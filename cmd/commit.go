@@ -5,11 +5,13 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
-	"github.com/JaquesBoeno/GitHook/commit"
-	"github.com/JaquesBoeno/GitHook/config"
-	"github.com/JaquesBoeno/GitHook/prompts"
+	commitMessage "github.com/JaquesBoeno/GitCommitHook/commit"
+	"github.com/JaquesBoeno/GitCommitHook/config"
+	"github.com/JaquesBoeno/GitCommitHook/git"
+	"github.com/JaquesBoeno/GitCommitHook/prompts"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
@@ -37,6 +39,12 @@ func Run() {
 	}
 
 	if m, ok := m.(prompts.Model); ok && m.Responses[0].Id != "" {
-		fmt.Println("\n\nCommit Mensagem Preview:\n\n", commit.CommitMessageBuilder(config.TemplateCommit, m.Responses))
+		message := commitMessage.CommitMessageBuilder(config.TemplateCommit, m.Responses)
+		result, err := git.Commit(message)
+		if err != nil {
+			log.Printf("run git commit failed, err=%v\n", err)
+			log.Printf("commit message is: \n\n%s\n\n", string(message))
+		}
+		fmt.Print(result, "\n")
 	}
 }

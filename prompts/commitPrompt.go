@@ -5,15 +5,15 @@ import (
 	"math"
 	"strings"
 
-	"github.com/JaquesBoeno/GitHook/commit"
-	"github.com/JaquesBoeno/GitHook/config"
+	commitMessage "github.com/JaquesBoeno/GitCommitHook/commit"
+	"github.com/JaquesBoeno/GitCommitHook/config"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Model struct {
 	Questions []config.Question
-	Responses []commit.Value
+	Responses []commitMessage.Value
 
 	currentTextinput textinput.Model
 	currentCursor    int
@@ -67,7 +67,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case tea.KeyMsg:
 				switch msg.String() {
 				case "enter":
-					m.Responses = append(m.Responses, commit.Value{
+					m.Responses = append(m.Responses, commitMessage.Value{
 						Id:    m.currentQuestion.Id,
 						Value: m.currentQuestion.Options[m.currentCursor].Name,
 					})
@@ -103,7 +103,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("%s:\n> %s\n",
 						m.currentQuestion.Label,
 						m.currentTextinput.Value()))
-					m.Responses = append(m.Responses, commit.Value{
+					m.Responses = append(m.Responses, commitMessage.Value{
 						Id:    m.currentQuestion.Id,
 						Value: m.currentTextinput.Value(),
 					})
@@ -128,7 +128,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	str := strings.Builder{}
-	str.WriteString(m.pastResponses)
+	str.WriteString(m.pastResponses + "\n")
 
 	switch m.currentQuestion.Type {
 	case "select":

@@ -1,4 +1,4 @@
-module github.com/JaquesBoeno/GitHook
+module github.com/JaquesBoeno/GitCommitHook
 
 go 1.21.4
 
