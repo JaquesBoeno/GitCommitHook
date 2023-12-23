@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 )
 
 type Configs struct {
@@ -29,13 +28,16 @@ type Option struct {
 }
 
 func ReadConfigs() Configs {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exePath := filepath.Dir(ex)
+	// uncomment this code when you build
+	// ex, err := os.Executable()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// exePath := filepath.Dir(ex)
+	// jsonFile, err := os.Open(exePath + "/config.json")
 
-	jsonFile, err := os.Open(exePath + "/config.json")
+	// and comment this code when you build
+	jsonFile, err := os.Open("./config.json")
 
 	if err != nil {
 		fmt.Println("need a file config.json", err)

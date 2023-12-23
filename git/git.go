@@ -1,6 +1,7 @@
 package git
 
 import (
+	"log"
 	"os"
 	"os/exec"
 )
@@ -22,4 +23,14 @@ func Commit(message string) (string, error) {
 	result, error := cmd.CombinedOutput()
 
 	return string(result), error
+}
+
+func Hook(message string, path string) {
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0)
+	if err != nil {
+		log.Printf("run git commit failed, err=%v\n", err)
+	}
+	defer file.Close()
+
+	file.WriteString(message)
 }

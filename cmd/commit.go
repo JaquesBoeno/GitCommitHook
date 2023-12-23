@@ -21,7 +21,7 @@ var commitCmd = &cobra.Command{
 	Short: "Create a commit",
 	Long:  `creating commit with the pattern you defined in the settings file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		Run()
+		Run(args)
 	},
 }
 
@@ -29,7 +29,7 @@ func init() {
 	rootCmd.AddCommand(commitCmd)
 }
 
-func Run() {
+func Run(args []string) {
 	config := config.ReadConfigs()
 	p := tea.NewProgram(prompts.InitialModel(config.Questions))
 	m, err := p.Run()
@@ -40,11 +40,15 @@ func Run() {
 
 	if m, ok := m.(prompts.Model); ok && m.Responses[0].Id != "" {
 		message := commitMessage.CommitMessageBuilder(config.TemplateCommit, m.Responses)
-		result, err := git.Commit(message)
-		if err != nil {
-			log.Printf("run git commit failed, err=%v\n", err)
-			log.Printf("commit message is: \n\n%s\n\n", string(message))
+		if args[0] == "--hook" {
+			git.Hook(message, args[1])
+		} else {
+			result, err := git.Commit(message)
+			if err != nil {
+				log.Printf("run git commit failed, err=%v\n", err)
+				log.Printf("commit message is: \n\n%s\n\n", string(message))
+			}
+			fmt.Print(result, "\n")
 		}
-		fmt.Print(result, "\n")
 	}
 }
