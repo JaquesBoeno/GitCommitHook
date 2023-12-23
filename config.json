@@ -2,6 +2,7 @@
   "questions": [
     {
       "id": "scope",
+      "type": "select",
       "label": "What scope of this change? (e.g. backend or frontend)",
       "options": [
         { "name": "front-end", "desc": "Change in front-end scope" },
@@ -10,6 +11,7 @@
     },
     {
       "id": "type",
+      "type": "select",
       "label": "Select the type of change you're committing",
       "options": [
         { "name": "feat", "desc": "feat: A new feature" },
@@ -39,6 +41,7 @@
 
     {
       "id": "subject",
+      "type": "text",
       "label": "Write a short, imperative tense description of change (max 66 chars)",
       "errorMsg": "Write a minimal 1 and max 66 chars",
       "min": 1,
@@ -46,6 +49,7 @@
     },
     {
       "id": "desc",
+      "type": "text",
       "label": "Provide a large description of the changes: (press enter for skip)",
       "errorMsg": "write a valid text",
       "min": 0,

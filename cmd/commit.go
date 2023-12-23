@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/JaquesBoeno/GitHook/commit"
 	"github.com/JaquesBoeno/GitHook/config"
 	"github.com/JaquesBoeno/GitHook/prompts"
 	tea "github.com/charmbracelet/bubbletea"
@@ -29,9 +30,13 @@ func init() {
 func Run() {
 	config := config.ReadConfigs()
 	p := tea.NewProgram(prompts.InitialModel(config.Questions))
-	_, err := p.Run()
+	m, err := p.Run()
 	if err != nil {
 		fmt.Println("Oh no:", err)
 		os.Exit(1)
+	}
+
+	if m, ok := m.(prompts.Model); ok && m.Responses[0].Id != "" {
+		fmt.Println(commit.CommitMessageBuilder(config.TemplateCommit, m.Responses))
 	}
 }

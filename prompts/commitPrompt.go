@@ -5,6 +5,7 @@ import (
 	"math"
 	"strings"
 
+	"github.com/JaquesBoeno/GitHook/commit"
 	"github.com/JaquesBoeno/GitHook/config"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -12,36 +13,37 @@ import (
 
 type Model struct {
 	Questions []config.Question
-	Responses []response
+	Responses []commit.Value
 
-	currentTextinput    textinput.Model
-	currentCursor       int
-	currentChoice       config.Option
-	currentQuestion     config.Question
-	currentQuestionType string
-	pastResponses       string
-	index               int
+	currentTextinput textinput.Model
+	currentCursor    int
+	currentQuestion  config.Question
+	pastResponses    string
+	index            int
+	err              error
 }
 
-type response struct {
-	id    string
-	value string
-}
+type (
+	errMsg error
+)
 
 func InitialModel(questions []config.Question) Model {
-	qType := ""
-	if questions[0].Options[0].Name != "" {
-		qType = "select"
-	} else {
-		qType = "text"
+	ti := textinput.New()
+
+	if questions[0].Type == "text" {
+		ti.Placeholder = "Message here"
+		ti.Focus()
+		ti.CharLimit = questions[0].Max
+		ti.Width = 100
+		ti.ShowSuggestions = true
 	}
 
 	return Model{
-		Questions:           questions,
-		currentQuestionType: qType,
-		currentQuestion:     questions[0],
-		currentCursor:       0,
-		index:               0,
+		currentTextinput: ti,
+		Questions:        questions,
+		currentQuestion:  questions[0],
+		currentCursor:    0,
+		index:            0,
 	}
 }
 
@@ -50,26 +52,24 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	m.currentQuestionType = "select"
-
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q":
+		case "ctrl+c":
 			return m, tea.Quit
 		}
 	}
 
-	switch m.currentQuestionType {
+	switch m.currentQuestion.Type {
 	case "select":
 		{
 			switch msg := msg.(type) {
 			case tea.KeyMsg:
 				switch msg.String() {
 				case "enter":
-					m.Responses = append(m.Responses, response{
-						id:    m.currentQuestion.Id,
-						value: m.currentQuestion.Options[m.currentCursor].Name,
+					m.Responses = append(m.Responses, commit.Value{
+						Id:    m.currentQuestion.Id,
+						Value: m.currentQuestion.Options[m.currentCursor].Name,
 					})
 					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("%s: \033[1m%s\033[0m\n",
 						m.currentQuestion.Label,
@@ -90,6 +90,35 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 		}
+	case "text":
+		var cmd tea.Cmd
+
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.Type {
+			case tea.KeyEnter:
+				m.err = m.checkLen()
+
+				if m.err == nil {
+					m.pastResponses = fmt.Sprint(m.pastResponses, fmt.Sprintf("%s:\n> %s\n",
+						m.currentQuestion.Label,
+						m.currentTextinput.Value()))
+					m.Responses = append(m.Responses, commit.Value{
+						Id:    m.currentQuestion.Id,
+						Value: m.currentTextinput.Value(),
+					})
+
+					return m.NextQuestion()
+				}
+			}
+
+		case errMsg:
+			m.err = msg
+			return m, nil
+		}
+
+		m.currentTextinput, cmd = m.currentTextinput.Update(msg)
+		return m, cmd
 	}
 
 	return m, nil
@@ -98,8 +127,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	str := strings.Builder{}
 	str.WriteString(m.pastResponses)
-	// Question Type: selected
-	switch m.currentQuestionType {
+
+	switch m.currentQuestion.Type {
 	case "select":
 		{
 			questionPerPage := 5
@@ -138,29 +167,66 @@ func (m Model) View() string {
 
 			str.WriteString(fmt.Sprintf("\n%s\n", m.currentQuestion.Options[m.currentCursor].Desc))
 		}
+	case "text":
+		{
+
+			str.WriteString(fmt.Sprintf(
+				"%s\n%d %s\n",
+				m.currentQuestion.Label,
+				len(m.currentTextinput.Value()),
+				m.currentTextinput.View(),
+			) + "\n")
+
+		}
 	}
 
 	return str.String()
+
 }
 
 func (m Model) NextQuestion() (tea.Model, tea.Cmd) {
-	if m.index+1 >= len(m.Questions) {
-		m.View()
-
-		return m, nil
+	if m.index >= len(m.Questions)-1 {
+		tea.ClearScreen()
+		return m, tea.Quit
 	} else {
 		m.index++
 		m.currentQuestion = m.Questions[m.index]
-		qType := ""
 
-		if m.currentQuestion.Options[0].Name != "" {
-			qType = "select"
-		} else {
-			qType = "text"
+		if m.currentQuestion.Type == "text" {
+			ti := textinput.New()
+			ti.Placeholder = "Message here"
+			ti.Focus()
+			ti.CharLimit = m.Questions[m.index].Max
+			ti.Width = 100
+			ti.ShowSuggestions = true
+			m.currentTextinput = ti
 		}
 
-		m.currentQuestionType = qType
 		return m, nil
 	}
+}
 
+func (m Model) checkLen() error {
+	var err error
+
+	c := m.currentTextinput
+	if len(c.Value()) < m.currentQuestion.Min {
+		err = fmt.Errorf(
+			"minimal char: %d",
+			m.currentQuestion.Min,
+		)
+	} else if len(c.Value()) > m.currentQuestion.Max {
+		err = fmt.Errorf(
+			"max char: %d",
+			m.currentQuestion.Max,
+		)
+	}
+	return err
+}
+
+func chars(len int, min int, max int) string {
+	if len < min || len > max {
+		return fmt.Sprintf("\033[31m(%d)\033[0m", len)
+	}
+	return fmt.Sprintf("\033[32m(%d)\033[0m", len)
 }
