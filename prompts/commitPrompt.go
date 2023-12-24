@@ -133,10 +133,3 @@ func (m Model) checkLen() error {
 	}
 	return err
 }
-
-func chars(len int, min int, max int) string {
-	if len < min || len > max {
-		return fmt.Sprintf("\033[31m(%d)\033[0m", len)
-	}
-	return fmt.Sprintf("\033[32m(%d)\033[0m", len)
-}
