@@ -32,7 +32,7 @@ var commitCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(commitCmd)
-	commitCmd.PersistentFlags().String("hook", "", "A search term for a dad joke.")
+	commitCmd.PersistentFlags().String("hook", "", "Save the commit message to a file, util to a git hook")
 }
 
 func Run(hook string) {
