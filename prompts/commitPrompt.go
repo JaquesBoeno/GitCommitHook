@@ -18,6 +18,7 @@ type Model struct {
 	currentTextinput textinput.Model
 	currentCursor    int
 	currentQuestion  config.Question
+	confirmResponse  string
 	pastResponses    string
 	index            int
 	Err              error
@@ -67,6 +68,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return selectUpdate(msg, m)
 	case "text":
 		return textUpdate(msg, m)
+	case "confirm":
+		return confirmUpdate(msg, m)
 	case "none":
 		return m, nil
 	}
@@ -83,6 +86,8 @@ func (m Model) View() string {
 		str.WriteString(selectView(m))
 	case "text":
 		str.WriteString(textView(m))
+	case "confirm":
+		str.WriteString(confirmView(m))
 	case "none":
 		return str.String()
 	}
@@ -100,6 +105,7 @@ func (m Model) NextQuestion() (tea.Model, tea.Cmd) {
 		m.index++
 		m.currentCursor = 0
 		m.currentQuestion = m.Questions[m.index]
+		m.confirmResponse = ""
 
 		if m.currentQuestion.Type == "text" {
 			ti := textinput.New()

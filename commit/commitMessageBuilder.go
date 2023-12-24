@@ -19,8 +19,8 @@ func CommitMessageBuilder(template string, values []Value) string {
 		s = fmt.Sprint(str[0], v.Value, str[1])
 	}
 
-	for strings.Contains(s, "\n\n") {
-		s = strings.ReplaceAll(s, "\n\n", "\n")
+	for strings.Contains(s, "\n\n\n") {
+		s = strings.ReplaceAll(s, "\n\n\n", "\n\n")
 	}
 
 	return s

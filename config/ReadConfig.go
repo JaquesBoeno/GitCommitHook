@@ -13,13 +13,14 @@ type Configs struct {
 }
 
 type Question struct {
-	Id       string   `json:"id"`
-	Type     string   `json:"type"`
-	Label    string   `json:"label"`
-	Options  []Option `json:"options"`
-	ErrorMsg string   `json:"errorMsg"`
-	Min      int      `json:"min"`
-	Max      int      `json:"max"`
+	Id        string     `json:"id"`
+	Type      string     `json:"type"`
+	Label     string     `json:"label"`
+	Options   []Option   `json:"options"`
+	ErrorMsg  string     `json:"errorMsg"`
+	Min       int        `json:"min"`
+	Max       int        `json:"max"`
+	Questions []Question `json:"questions"`
 }
 
 type Option struct {

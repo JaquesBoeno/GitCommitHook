@@ -47,6 +47,7 @@ func Run(hook string) {
 
 	if m, ok := m.(prompts.Model); ok && m.Err == nil && len(m.Responses) > 0 {
 		message := commitMessage.CommitMessageBuilder(config.TemplateCommit, m.Responses)
+
 		if len(hook) > 0 {
 			git.Hook(message, hook)
 		} else {

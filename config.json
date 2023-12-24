@@ -38,7 +38,6 @@
         { "name": "WIP", "desc": "WIP: Work in progress" }
       ]
     },
-
     {
       "id": "subject",
       "type": "text",
@@ -54,7 +53,45 @@
       "errorMsg": "write a valid text",
       "min": 0,
       "max": 1000
+    },
+    {
+      "id": "issues",
+      "type": "confirm",
+      "label": "Does this change affect any open issues",
+      "questions": [
+        {
+          "id": "issues",
+          "type": "text",
+          "label": "Write about this",
+          "errorMsg": "write a valid text",
+          "min": 0,
+          "max": 1000
+        },
+        {
+          "id": "issues2",
+          "type": "text",
+          "label": "Write about this 2",
+          "errorMsg": "write a valid text",
+          "min": 0,
+          "max": 1000
+        }
+      ]
+    },
+    {
+      "id": "breakChanges",
+      "type": "confirm",
+      "label": "Are there any breaking changes",
+      "questions": [
+        {
+          "id": "breakChanges",
+          "type": "text",
+          "label": "Write about this",
+          "errorMsg": "write a valid text",
+          "min": 0,
+          "max": 1000
+        }
+      ]
     }
   ],
-  "templateCommit": "<type>(<scope>): <subject>\n\n<desc>\n"
+  "templateCommit": "<type>(<scope>): <subject>\n\n<desc>\n\n<breakChanges>\n\n<issues>\n\n<issues2>"
 }
