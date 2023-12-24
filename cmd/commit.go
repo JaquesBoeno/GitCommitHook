@@ -17,21 +17,27 @@ import (
 )
 
 var commitCmd = &cobra.Command{
-	Use:                "commit",
-	Short:              "Create a commit",
-	Long:               `creating commit with the pattern you defined in the settings file`,
-	DisableFlagParsing: true,
+	Use:   "commit",
+	Short: "Create a commit",
+	Long:  `creating commit with the pattern you defined in the settings file`,
 	Run: func(cmd *cobra.Command, args []string) {
-		Run(args)
+		hook, err := cmd.Flags().GetString("hook")
+		if err != nil {
+			panic(err)
+		}
+
+		Run(hook)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(commitCmd)
+	commitCmd.PersistentFlags().String("hook", "", "A search term for a dad joke.")
 }
 
-func Run(args []string) {
+func Run(hook string) {
 	config := config.ReadConfigs()
+
 	p := tea.NewProgram(prompts.InitialModel(config.Questions))
 	m, err := p.Run()
 	if err != nil {
@@ -39,18 +45,16 @@ func Run(args []string) {
 		os.Exit(1)
 	}
 
-	if m, ok := m.(prompts.Model); ok && m.Err == nil && m.Responses[0].Id != "" {
+	if m, ok := m.(prompts.Model); ok && m.Err == nil && len(m.Responses) > 0 {
 		message := commitMessage.CommitMessageBuilder(config.TemplateCommit, m.Responses)
-		if args[0] == "--hook" {
-			git.Hook(message, args[1])
+		if len(hook) > 0 {
+			git.Hook(message, hook)
 		} else {
-			result, err := git.Commit(message)
+			_, err := git.Commit(message)
 			if err != nil {
 				log.Printf("run git commit failed, err=%v\n", err)
 				log.Printf("commit message is: \n\n%s\n\n", string(message))
 			}
-			fmt.Print(result, "\n")
 		}
-
 	}
 }
